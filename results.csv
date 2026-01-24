@@ -1,0 +1,4 @@
+host,port,protocol,status,banner
+scanme.nmap.org,22,tcp,open,
+scanme.nmap.org,80,tcp,open,
+scanme.nmap.org,443,tcp,closed,

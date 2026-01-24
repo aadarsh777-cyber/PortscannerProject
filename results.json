@@ -1,0 +1,20 @@
+[
+  {
+    "host": "scanme.nmap.org",
+    "port": 22,
+    "protocol": "tcp",
+    "status": "open"
+  },
+  {
+    "host": "scanme.nmap.org",
+    "port": 80,
+    "protocol": "tcp",
+    "status": "open"
+  },
+  {
+    "host": "scanme.nmap.org",
+    "port": 443,
+    "protocol": "tcp",
+    "status": "closed"
+  }
+]
