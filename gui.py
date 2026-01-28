@@ -122,7 +122,7 @@ banner_var = tk.BooleanVar()
 tk.Checkbutton(top_frame, text="Enable Banner Grabbing (TCP only)", variable=banner_var, bg="#1e1e2f", fg="white", selectcolor="#2d2d3a").grid(row=3, column=1, sticky="w")
 
 tk.Button(middle_frame, text="Run Scan", command=run_scan, bg="#00a86b", fg="white").grid(row=0, column=0, pady=10)
-tk.Button(middle_frame, text="Clear Output", command=clear_output, bg="#ff4500", fg="white").grid(row=0, column=1, pady=10)
+tk.Button(middle_frame, text="Clear Output", command=clear_output, bg="#ff4500", fg="white").grid(row=0, column=1, padx=5)
 tk.Button(middle_frame, text="Save JSON", command=save_results_json, bg="#1e90ff", fg="white").grid(row=1, column=0, pady=5)
 tk.Button(middle_frame, text="Save CSV", command=save_results_csv, bg="#9370db", fg="white").grid(row=1, column=1, pady=5)
 
