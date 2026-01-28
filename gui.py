@@ -137,7 +137,7 @@ output_box.tag_config("closed", foreground="red")
 output_box.tag_config("summary", foreground="orange", font=("Consolas", 10, "bold"))
 
 # Progress bar
-progress_bar = ttk.Progressbar(bottom_frame, orient="horizontal", length=400, mode="determinate")
-progress_bar.grid(row=1, column=0, columnspan=2, pady=10)
+progress_bar = ttk.Progressbar(root, orient="horizontal", length=400, mode="determinate")
+progress_bar.grid(row=4, column=0, pady=10)
 
 root.mainloop()
