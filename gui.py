@@ -33,6 +33,7 @@ def run_scan():
         global results
         results = []
         count = 0
+        status_var.set("Scanning...")
         if scan_type == "tcp":
             for host in targets:
                 for port in ports:
@@ -139,5 +140,9 @@ output_box.tag_config("summary", foreground="orange", font=("Consolas", 10, "bol
 # Progress bar
 progress_bar = ttk.Progressbar(root, orient="horizontal", length=400, mode="determinate")
 progress_bar.grid(row=4, column=0, pady=10)
+
+status_var = tk.StringVar(value="Ready")
+status_bar = tk.Label(root, textvariable=status_var, relief="sunken", anchor="w", bg="#2d2d3a", fg="white")
+status_bar.grid(row=3, column=0, sticky="ew")
 
 root.mainloop()
