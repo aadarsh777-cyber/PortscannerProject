@@ -96,29 +96,38 @@ root = tk.Tk()
 root.title("Python Port Scanner")
 root.configure(bg="#1e1e2f")
 
-tk.Label(root, text="Targets (comma or CIDR):", bg="#1e1e2f", fg="white").grid(row=0, column=0, sticky="w")
-target_entry = tk.Entry(root, width=50, bg="#2d2d3a", fg="white", insertbackground="white")
+top_frame = tk.Frame(root, bg="#1e1e2f")
+top_frame.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
+
+middle_frame = tk.Frame(root, bg="#1e1e2f")
+middle_frame.grid(row=1, column=0, sticky="ew", padx=10, pady=10)
+
+bottom_frame = tk.Frame(root, bg="#1e1e2f")
+bottom_frame.grid(row=2, column=0, sticky="ew", padx=10, pady=10)
+
+tk.Label(top_frame, text="Targets (comma or CIDR):", bg="#1e1e2f", fg="white").grid(row=0, column=0, sticky="w")
+target_entry = tk.Entry(top_frame, width=50, bg="#2d2d3a", fg="white", insertbackground="white")
 target_entry.grid(row=0, column=1, padx=5, pady=5)
 
-tk.Label(root, text="Ports (e.g. 22,80,443 or 1-1024):", bg="#1e1e2f", fg="white").grid(row=1, column=0, sticky="w")
-ports_entry = tk.Entry(root, width=50, bg="#2d2d3a", fg="white", insertbackground="white")
+tk.Label(top_frame, text="Ports (e.g. 22,80,443 or 1-1024):", bg="#1e1e2f", fg="white").grid(row=1, column=0, sticky="w")
+ports_entry = tk.Entry(top_frame, width=50, bg="#2d2d3a", fg="white", insertbackground="white")
 ports_entry.grid(row=1, column=1, padx=5, pady=5)
 
 scan_var = tk.StringVar(value="tcp")
-tk.Label(root, text="Scan Type:", bg="#1e1e2f", fg="white").grid(row=2, column=0, sticky="w")
-tk.Radiobutton(root, text="TCP", variable=scan_var, value="tcp", bg="#1e1e2f", fg="white", selectcolor="#2d2d3a").grid(row=2, column=1, sticky="w")
-tk.Radiobutton(root, text="UDP", variable=scan_var, value="udp", bg="#1e1e2f", fg="white", selectcolor="#2d2d3a").grid(row=2, column=1, sticky="e")
+tk.Label(top_frame, text="Scan Type:", bg="#1e1e2f", fg="white").grid(row=2, column=0, sticky="w")
+tk.Radiobutton(top_frame, text="TCP", variable=scan_var, value="tcp", bg="#1e1e2f", fg="white", selectcolor="#2d2d3a").grid(row=2, column=1, sticky="w")
+tk.Radiobutton(top_frame, text="UDP", variable=scan_var, value="udp", bg="#1e1e2f", fg="white", selectcolor="#2d2d3a").grid(row=2, column=1, sticky="e")
 
 banner_var = tk.BooleanVar()
-tk.Checkbutton(root, text="Enable Banner Grabbing (TCP only)", variable=banner_var, bg="#1e1e2f", fg="white", selectcolor="#2d2d3a").grid(row=3, column=1, sticky="w")
+tk.Checkbutton(top_frame, text="Enable Banner Grabbing (TCP only)", variable=banner_var, bg="#1e1e2f", fg="white", selectcolor="#2d2d3a").grid(row=3, column=1, sticky="w")
 
-tk.Button(root, text="Run Scan", command=run_scan, bg="#00a86b", fg="white").grid(row=4, column=0, pady=10)
-tk.Button(root, text="Clear Output", command=clear_output, bg="#ff4500", fg="white").grid(row=4, column=1, pady=10)
-tk.Button(root, text="Save JSON", command=save_results_json, bg="#1e90ff", fg="white").grid(row=5, column=0, pady=5)
-tk.Button(root, text="Save CSV", command=save_results_csv, bg="#9370db", fg="white").grid(row=5, column=1, pady=5)
+tk.Button(middle_frame, text="Run Scan", command=run_scan, bg="#00a86b", fg="white").grid(row=0, column=0, pady=10)
+tk.Button(middle_frame, text="Clear Output", command=clear_output, bg="#ff4500", fg="white").grid(row=0, column=1, pady=10)
+tk.Button(middle_frame, text="Save JSON", command=save_results_json, bg="#1e90ff", fg="white").grid(row=1, column=0, pady=5)
+tk.Button(middle_frame, text="Save CSV", command=save_results_csv, bg="#9370db", fg="white").grid(row=1, column=1, pady=5)
 
-output_box = scrolledtext.ScrolledText(root, width=100, height=20, bg="#0d0d0d", fg="white", font=("Consolas", 10))
-output_box.grid(row=6, column=0, columnspan=2, padx=10, pady=10)
+output_box = scrolledtext.ScrolledText(bottom_frame, width=100, height=20, bg="#0d0d0d", fg="white", font=("Consolas", 10))
+output_box.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
 
 # Colour tags
 output_box.tag_config("header", foreground="cyan", font=("Consolas", 10, "bold"))
@@ -128,7 +137,7 @@ output_box.tag_config("closed", foreground="red")
 output_box.tag_config("summary", foreground="orange", font=("Consolas", 10, "bold"))
 
 # Progress bar
-progress_bar = ttk.Progressbar(root, orient="horizontal", length=400, mode="determinate")
-progress_bar.grid(row=7, column=0, columnspan=2, pady=10)
+progress_bar = ttk.Progressbar(bottom_frame, orient="horizontal", length=400, mode="determinate")
+progress_bar.grid(row=1, column=0, columnspan=2, pady=10)
 
 root.mainloop()
