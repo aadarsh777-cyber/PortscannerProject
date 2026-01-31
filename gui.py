@@ -69,7 +69,9 @@ def run_scan():
 
         # Display results
         display_results = results
-        if sort_by_port_var.get():
+        if sort_by_status_var.get():
+            display_results = sort_results_by_status(display_results)
+        elif sort_by_port_var.get():
             display_results = sort_results_by_port(display_results)
         output_box.delete(1.0, tk.END)
         output_box.insert(tk.END, f"{'HOST':<25} {'PORT':<6} {'PROTO':<5} {'STATUS':<14} {'BANNER':<40}\n", "header")
@@ -151,6 +153,22 @@ def set_full_range():
 def sort_results_by_port(results_list):
     return sorted(results_list, key=lambda x: int(x["port"]))
 
+def sort_results_by_status(results_list):
+    return sorted(results_list, key=lambda x: (0 if x["status"] == "open" else 1, int(x["port"])))
+
+def save_results_html():
+    if not results:
+        messagebox.showwarning("Warning", "No results to save.")
+        return
+    file = filedialog.asksaveasfilename(defaultextension=".html", filetypes=[("HTML files","*.html")])
+    if file:
+        with open(file, "w") as f:
+            f.write("<html><body><h2>Port Scan Results</h2><table border='1'>")
+            f.write("<tr><th>Host</th><th>Port</th><th>Protocol</th><th>Status</th><th>Banner</th></tr>")
+            for r in results:
+                f.write(f"<tr><td>{r['host']}</td><td>{r['port']}</td><td>{r['protocol']}</td><td>{r['status']}</td><td>{r.get('banner','')}</td></tr>")
+            f.write("</table></body></html>")
+
 # --- GUI Layout ---
 root = tk.Tk()
 root.title("Python Port Scanner")
@@ -202,6 +220,9 @@ tk.Checkbutton(top_frame, text="Show only open", variable=filter_open_var, bg="#
 sort_by_port_var = tk.BooleanVar()
 tk.Checkbutton(top_frame, text="Sort by port", variable=sort_by_port_var, bg="#1e1e2f", fg="white", selectcolor="#2d2d3a").grid(row=8, column=1, sticky="w")
 
+sort_by_status_var = tk.BooleanVar()
+tk.Checkbutton(top_frame, text="Open first", variable=sort_by_status_var, bg="#1e1e2f", fg="white", selectcolor="#2d2d3a").grid(row=9, column=1, sticky="w")
+
 tk.Button(middle_frame, text="Run Scan", command=run_scan, bg="#00a86b", fg="white").grid(row=0, column=0, pady=10)
 tk.Button(middle_frame, text="Clear Output", command=clear_output, bg="#ff4500", fg="white").grid(row=0, column=1, padx=5)
 tk.Button(middle_frame, text="Save JSON", command=save_results_json, bg="#1e90ff", fg="white").grid(row=0, column=2, padx=5)
@@ -210,6 +231,7 @@ tk.Button(middle_frame, text="Save TXT", command=save_results_txt, bg="#008b8b",
 tk.Button(middle_frame, text="Copy Results", command=copy_results, bg="#4682b4", fg="white").grid(row=0, column=5, padx=5)
 tk.Button(middle_frame, text="Random Ports", command=random_ports, bg="#ffa500", fg="black").grid(row=0, column=6, padx=5)
 tk.Button(middle_frame, text="Stop Scan", command=stop_scan, bg="#dc143c", fg="white").grid(row=0, column=7, padx=5)
+tk.Button(middle_frame, text="Save HTML", command=save_results_html, bg="#ff69b4", fg="black").grid(row=0, column=9, padx=5)
 
 output_box = scrolledtext.ScrolledText(bottom_frame, width=100, height=20, bg="#0d0d0d", fg="white", font=("Consolas", 10))
 output_box.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
