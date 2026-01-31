@@ -18,6 +18,7 @@ def run_scan():
     ports_input = ports_entry.get().strip()
     scan_type = scan_var.get()
     banner_enabled = banner_var.get()
+    timeout_val = float(timeout_entry.get())
     start_time = time.time()
 
     if not target_input or not ports_input:
@@ -46,10 +47,10 @@ def run_scan():
                 for port in ports:
                     if stop_flag:
                         break
-                    res = run_tcp_scan([host], [port], timeout=1.0, concurrency=1)
+                    res = run_tcp_scan([host], [port], timeout=timeout_val, concurrency=1)
                     results.extend(res)
                     if banner_enabled and res and res[0]["status"] == "open":
-                        banner = try_grab_banner(host, port, timeout=1.0)
+                        banner = try_grab_banner(host, port, timeout=timeout_val)
                         if banner:
                             res[0]["banner"] = banner
                     count += 1
@@ -61,7 +62,7 @@ def run_scan():
                 for port in ports:
                     if stop_flag:
                         break
-                    res = run_udp_scan([host], [port], timeout=2.0, retries=1, concurrency=1)
+                    res = run_udp_scan([host], [port], timeout=timeout_val, retries=1, concurrency=1)
                     results.extend(res)
                     count += 1
                     progress_bar["value"] = count
@@ -171,6 +172,11 @@ tk.Radiobutton(top_frame, text="UDP", variable=scan_var, value="udp", bg="#1e1e2
 
 banner_var = tk.BooleanVar()
 tk.Checkbutton(top_frame, text="Enable Banner Grabbing (TCP only)", variable=banner_var, bg="#1e1e2f", fg="white", selectcolor="#2d2d3a").grid(row=4, column=1, sticky="w")
+
+tk.Label(top_frame, text="Timeout (sec):", bg="#1e1e2f", fg="white").grid(row=5, column=0, sticky="w")
+timeout_entry = tk.Entry(top_frame, width=10, bg="#2d2d3a", fg="white")
+timeout_entry.insert(0, "1")
+timeout_entry.grid(row=5, column=1, padx=5, pady=5)
 
 tk.Button(middle_frame, text="Run Scan", command=run_scan, bg="#00a86b", fg="white").grid(row=0, column=0, pady=10)
 tk.Button(middle_frame, text="Clear Output", command=clear_output, bg="#ff4500", fg="white").grid(row=0, column=1, padx=5)
