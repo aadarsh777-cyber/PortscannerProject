@@ -98,6 +98,9 @@ def run_scan():
 
         progress_bar["value"] = progress_bar["maximum"]  # complete
         status_var.set("Scan complete")
+        open_count = sum(1 for r in results if r["status"] == "open")
+        total_count = len(results)
+        messagebox.showinfo("Scan Summary", f"Open ports: {open_count}\nTotal scanned: {total_count}")
 
     threading.Thread(target=scan_task).start()
 def clear_output():
@@ -188,6 +191,8 @@ def search_results():
         output_box.tag_add("highlight", pos, end)
         start = end
     output_box.tag_config("highlight", background="yellow", foreground="black")
+
+
 
 # --- GUI Layout ---
 root = tk.Tk()
