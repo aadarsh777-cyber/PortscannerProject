@@ -7,6 +7,7 @@ from src.output import save_json, save_csv
 import threading
 import time
 import socket
+import random
 
 results = []
 
@@ -99,6 +100,11 @@ def save_results_csv():
     if file:
         save_csv(results, file)
 
+def random_ports():
+    ports_entry.delete(0, tk.END)
+    ports = random.sample(range(1, 1025), 10)
+    ports_entry.insert(0, ",".join(map(str, ports)))
+
 # --- GUI Layout ---
 root = tk.Tk()
 root.title("Python Port Scanner")
@@ -138,6 +144,7 @@ tk.Button(middle_frame, text="Run Scan", command=run_scan, bg="#00a86b", fg="whi
 tk.Button(middle_frame, text="Clear Output", command=clear_output, bg="#ff4500", fg="white").grid(row=0, column=1, padx=5)
 tk.Button(middle_frame, text="Save JSON", command=save_results_json, bg="#1e90ff", fg="white").grid(row=0, column=2, padx=5)
 tk.Button(middle_frame, text="Save CSV", command=save_results_csv, bg="#9370db", fg="white").grid(row=1, column=1, pady=5)
+tk.Button(middle_frame, text="Random Ports", command=random_ports, bg="#ffa500", fg="black").grid(row=0, column=6, padx=5)
 
 output_box = scrolledtext.ScrolledText(bottom_frame, width=100, height=20, bg="#0d0d0d", fg="white", font=("Consolas", 10))
 output_box.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
