@@ -6,6 +6,7 @@ from src.services import try_grab_banner
 from src.output import save_json, save_csv
 import threading
 import time
+import socket
 
 results = []
 
@@ -60,7 +61,12 @@ def run_scan():
         for r in results:
             banner = r.get("banner", "")
             banner_short = (banner[:37] + "...") if banner and len(banner) > 40 else banner
-            line = f"{r['host']:<25} {r['port']:<6} {r['protocol']:<5} {r['status']:<14} {banner_short:<40}\n"
+            try:
+                resolved = socket.gethostbyaddr(r['host'])[0]
+                host_display = f"{r['host']} ({resolved})"
+            except Exception:
+                host_display = r['host']
+            line = f"{host_display:<25} {r['port']:<6} {r['protocol']:<5} {r['status']:<14} {banner_short:<40}\n"
             tag = "open" if r["status"] == "open" else "closed"
             output_box.insert(tk.END, line, tag)
         output_box.insert(tk.END, "-" * 92 + "\n", "divider")
