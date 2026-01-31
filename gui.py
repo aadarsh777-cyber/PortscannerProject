@@ -169,6 +169,26 @@ def save_results_html():
                 f.write(f"<tr><td>{r['host']}</td><td>{r['port']}</td><td>{r['protocol']}</td><td>{r['status']}</td><td>{r.get('banner','')}</td></tr>")
             f.write("</table></body></html>")
 
+def auto_save_results():
+    with open("autosave_scan.txt", "w") as f:
+        for r in results:
+            f.write(f"{r['host']} {r['port']} {r['protocol']} {r['status']} {r.get('banner','')}\n")
+
+def search_results():
+    keyword = search_entry.get().strip().lower()
+    if not keyword:
+        return
+    output_box.tag_remove("highlight", "1.0", tk.END)
+    start = "1.0"
+    while True:
+        pos = output_box.search(keyword, start, stopindex=tk.END)
+        if not pos:
+            break
+        end = f"{pos}+{len(keyword)}c"
+        output_box.tag_add("highlight", pos, end)
+        start = end
+    output_box.tag_config("highlight", background="yellow", foreground="black")
+
 # --- GUI Layout ---
 root = tk.Tk()
 root.title("Python Port Scanner")
@@ -226,12 +246,18 @@ tk.Checkbutton(top_frame, text="Open first", variable=sort_by_status_var, bg="#1
 tk.Button(middle_frame, text="Run Scan", command=run_scan, bg="#00a86b", fg="white").grid(row=0, column=0, pady=10)
 tk.Button(middle_frame, text="Clear Output", command=clear_output, bg="#ff4500", fg="white").grid(row=0, column=1, padx=5)
 tk.Button(middle_frame, text="Save JSON", command=save_results_json, bg="#1e90ff", fg="white").grid(row=0, column=2, padx=5)
-tk.Button(middle_frame, text="Save CSV", command=save_results_csv, bg="#9370db", fg="white").grid(row=1, column=1, pady=5)
+tk.Button(middle_frame, text="Save CSV", command=save_results_csv, bg="#9370db", fg="white").grid(row=0, column=3, padx=5)
 tk.Button(middle_frame, text="Save TXT", command=save_results_txt, bg="#008b8b", fg="white").grid(row=0, column=4, padx=5)
 tk.Button(middle_frame, text="Copy Results", command=copy_results, bg="#4682b4", fg="white").grid(row=0, column=5, padx=5)
 tk.Button(middle_frame, text="Random Ports", command=random_ports, bg="#ffa500", fg="black").grid(row=0, column=6, padx=5)
 tk.Button(middle_frame, text="Stop Scan", command=stop_scan, bg="#dc143c", fg="white").grid(row=0, column=7, padx=5)
 tk.Button(middle_frame, text="Save HTML", command=save_results_html, bg="#ff69b4", fg="black").grid(row=0, column=9, padx=5)
+tk.Button(middle_frame, text="Auto Save", command=auto_save_results, bg="#32cd32", fg="black").grid(row=0, column=10, padx=5)
+
+search_entry = tk.Entry(middle_frame, width=20, bg="#2d2d3a", fg="white")
+search_entry.grid(row=1, column=0, padx=5)
+
+tk.Button(middle_frame, text="Search", command=search_results, bg="#daa520", fg="black").grid(row=1, column=1, padx=5)
 
 output_box = scrolledtext.ScrolledText(bottom_frame, width=100, height=20, bg="#0d0d0d", fg="white", font=("Consolas", 10))
 output_box.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
