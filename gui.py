@@ -10,6 +10,7 @@ import socket
 import random
 
 results = []
+stop_flag = False
 
 def run_scan():
     global results
@@ -33,12 +34,18 @@ def run_scan():
     def scan_task():
         nonlocal targets, ports
         global results
+        global stop_flag
         results = []
+        stop_flag = False
         count = 0
         status_var.set("Scanning...")
         if scan_type == "tcp":
             for host in targets:
+                if stop_flag:
+                    break
                 for port in ports:
+                    if stop_flag:
+                        break
                     res = run_tcp_scan([host], [port], timeout=1.0, concurrency=1)
                     results.extend(res)
                     if banner_enabled and res and res[0]["status"] == "open":
@@ -49,7 +56,11 @@ def run_scan():
                     progress_bar["value"] = count
         else:
             for host in targets:
+                if stop_flag:
+                    break
                 for port in ports:
+                    if stop_flag:
+                        break
                     res = run_udp_scan([host], [port], timeout=2.0, retries=1, concurrency=1)
                     results.extend(res)
                     count += 1
@@ -122,6 +133,10 @@ def random_ports():
     ports = random.sample(range(1, 1025), 10)
     ports_entry.insert(0, ",".join(map(str, ports)))
 
+def stop_scan():
+    global stop_flag
+    stop_flag = True
+
 # --- GUI Layout ---
 root = tk.Tk()
 root.title("Python Port Scanner")
@@ -164,6 +179,7 @@ tk.Button(middle_frame, text="Save CSV", command=save_results_csv, bg="#9370db",
 tk.Button(middle_frame, text="Save TXT", command=save_results_txt, bg="#008b8b", fg="white").grid(row=0, column=4, padx=5)
 tk.Button(middle_frame, text="Copy Results", command=copy_results, bg="#4682b4", fg="white").grid(row=0, column=5, padx=5)
 tk.Button(middle_frame, text="Random Ports", command=random_ports, bg="#ffa500", fg="black").grid(row=0, column=6, padx=5)
+tk.Button(middle_frame, text="Stop Scan", command=stop_scan, bg="#dc143c", fg="white").grid(row=0, column=7, padx=5)
 
 output_box = scrolledtext.ScrolledText(bottom_frame, width=100, height=20, bg="#0d0d0d", fg="white", font=("Consolas", 10))
 output_box.grid(row=0, column=0, columnspan=2, padx=10, pady=10)
