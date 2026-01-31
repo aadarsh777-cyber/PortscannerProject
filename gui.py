@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import scrolledtext, messagebox, filedialog, ttk
+from tkinter import scrolledtext, messagebox, filedialog, ttk, simpledialog
 from src.utils import expand_ports, expand_targets
 from src.scanner import run_tcp_scan, run_udp_scan
 from src.services import try_grab_banner
@@ -177,6 +177,51 @@ def auto_save_results():
         for r in results:
             f.write(f"{r['host']} {r['port']} {r['protocol']} {r['status']} {r.get('banner','')}\n")
 
+def save_results():
+    if not results:
+        messagebox.showwarning("Warning", "No results to save.")
+        return
+
+    # Popup to choose format
+    format_choice = tk.simpledialog.askstring(
+        "Save Results",
+        "Enter format (json / csv / txt / html):"
+    )
+
+    if not format_choice:
+        return
+
+    format_choice = format_choice.lower().strip()
+
+    if format_choice == "json":
+        file = filedialog.asksaveasfilename(defaultextension=".json", filetypes=[("JSON files","*.json")])
+        if file:
+            save_json(results, file)
+
+    elif format_choice == "csv":
+        file = filedialog.asksaveasfilename(defaultextension=".csv", filetypes=[("CSV files","*.csv")])
+        if file:
+            save_csv(results, file)
+
+    elif format_choice == "txt":
+        file = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files","*.txt")])
+        if file:
+            with open(file, "w") as f:
+                for r in results:
+                    f.write(f"{r['host']} {r['port']} {r['protocol']} {r['status']}\n")
+
+    elif format_choice == "html":
+        file = filedialog.asksaveasfilename(defaultextension=".html", filetypes=[("HTML files","*.html")])
+        if file:
+            with open(file, "w") as f:
+                f.write("<html><body><h2>Port Scan Results</h2><table border='1'>")
+                f.write("<tr><th>Host</th><th>Port</th><th>Protocol</th><th>Status</th><th>Banner</th></tr>")
+                for r in results:
+                    f.write(f"<tr><td>{r['host']}</td><td>{r['port']}</td><td>{r['protocol']}</td><td>{r['status']}</td><td>{r.get('banner','')}</td></tr>")
+                f.write("</table></body></html>")
+    else:
+        messagebox.showerror("Error", "Invalid format. Choose json, csv, txt, or html.")
+
 def search_results():
     keyword = search_entry.get().strip().lower()
     if not keyword:
@@ -270,14 +315,11 @@ tk.Checkbutton(top_frame, text="Open first", variable=sort_by_status_var, bg="#1
 
 tk.Button(middle_frame, text="Run Scan", command=run_scan, bg="#00a86b", fg="white").grid(row=0, column=0, pady=10)
 tk.Button(middle_frame, text="Clear Output", command=clear_output, bg="#ff4500", fg="white").grid(row=0, column=1, padx=5)
-tk.Button(middle_frame, text="Save JSON", command=save_results_json, bg="#1e90ff", fg="white").grid(row=0, column=2, padx=5)
-tk.Button(middle_frame, text="Save CSV", command=save_results_csv, bg="#9370db", fg="white").grid(row=0, column=3, padx=5)
-tk.Button(middle_frame, text="Save TXT", command=save_results_txt, bg="#008b8b", fg="white").grid(row=0, column=4, padx=5)
-tk.Button(middle_frame, text="Copy Results", command=copy_results, bg="#4682b4", fg="white").grid(row=0, column=5, padx=5)
-tk.Button(middle_frame, text="Random Ports", command=random_ports, bg="#ffa500", fg="black").grid(row=0, column=6, padx=5)
-tk.Button(middle_frame, text="Stop Scan", command=stop_scan, bg="#dc143c", fg="white").grid(row=0, column=7, padx=5)
-tk.Button(middle_frame, text="Save HTML", command=save_results_html, bg="#ff69b4", fg="black").grid(row=0, column=9, padx=5)
-tk.Button(middle_frame, text="Auto Save", command=auto_save_results, bg="#32cd32", fg="black").grid(row=0, column=10, padx=5)
+tk.Button(middle_frame, text="Save Results", command=save_results, bg="#1e90ff", fg="white").grid(row=0, column=2, padx=5)
+tk.Button(middle_frame, text="Copy Results", command=copy_results, bg="#4682b4", fg="white").grid(row=0, column=3, padx=5)
+tk.Button(middle_frame, text="Random Ports", command=random_ports, bg="#ffa500", fg="black").grid(row=0, column=4, padx=5)
+tk.Button(middle_frame, text="Stop Scan", command=stop_scan, bg="#dc143c", fg="white").grid(row=0, column=5, padx=5)
+tk.Button(middle_frame, text="Auto Save", command=auto_save_results, bg="#32cd32", fg="black").grid(row=0, column=6, padx=5)
 
 search_entry = tk.Entry(middle_frame, width=20, bg="#2d2d3a", fg="white")
 search_entry.grid(row=1, column=0, padx=5)
