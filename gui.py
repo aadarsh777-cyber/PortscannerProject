@@ -68,10 +68,15 @@ def run_scan():
                     progress_bar["value"] = count
 
         # Display results
+        display_results = results
+        if sort_by_port_var.get():
+            display_results = sort_results_by_port(display_results)
         output_box.delete(1.0, tk.END)
         output_box.insert(tk.END, f"{'HOST':<25} {'PORT':<6} {'PROTO':<5} {'STATUS':<14} {'BANNER':<40}\n", "header")
         output_box.insert(tk.END, "-" * 92 + "\n", "divider")
-        for r in results:
+        for r in display_results:
+            if filter_open_var.get() and r["status"] != "open":
+                continue
             banner = r.get("banner", "")
             banner_short = (banner[:37] + "...") if banner and len(banner) > 40 else banner
             try:
@@ -138,6 +143,14 @@ def stop_scan():
     global stop_flag
     stop_flag = True
 
+def set_full_range():
+    if messagebox.askyesno("Confirm", "Scan full port range 1-65535? This may take a long time. Continue?"):
+        ports_entry.delete(0, tk.END)
+        ports_entry.insert(0, "1-65535")
+
+def sort_results_by_port(results_list):
+    return sorted(results_list, key=lambda x: int(x["port"]))
+
 # --- GUI Layout ---
 root = tk.Tk()
 root.title("Python Port Scanner")
@@ -177,6 +190,17 @@ tk.Label(top_frame, text="Timeout (sec):", bg="#1e1e2f", fg="white").grid(row=5,
 timeout_entry = tk.Entry(top_frame, width=10, bg="#2d2d3a", fg="white")
 timeout_entry.insert(0, "1")
 timeout_entry.grid(row=5, column=1, padx=5, pady=5)
+
+tk.Label(top_frame, text="Concurrency:", bg="#1e1e2f", fg="white").grid(row=6, column=0, sticky="w")
+concurrency_entry = tk.Entry(top_frame, width=10, bg="#2d2d3a", fg="white")
+concurrency_entry.insert(0, "100")
+concurrency_entry.grid(row=6, column=1, padx=5, pady=5)
+
+filter_open_var = tk.BooleanVar()
+tk.Checkbutton(top_frame, text="Show only open", variable=filter_open_var, bg="#1e1e2f", fg="white", selectcolor="#2d2d3a").grid(row=7, column=1, sticky="w")
+
+sort_by_port_var = tk.BooleanVar()
+tk.Checkbutton(top_frame, text="Sort by port", variable=sort_by_port_var, bg="#1e1e2f", fg="white", selectcolor="#2d2d3a").grid(row=8, column=1, sticky="w")
 
 tk.Button(middle_frame, text="Run Scan", command=run_scan, bg="#00a86b", fg="white").grid(row=0, column=0, pady=10)
 tk.Button(middle_frame, text="Clear Output", command=clear_output, bg="#ff4500", fg="white").grid(row=0, column=1, padx=5)
