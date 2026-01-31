@@ -100,7 +100,7 @@ def run_scan():
         status_var.set("Scan complete")
         open_count = sum(1 for r in results if r["status"] == "open")
         total_count = len(results)
-        messagebox.showinfo("Scan Summary", f"Open ports: {open_count}\nTotal scanned: {total_count}")
+        root.after(0, lambda: messagebox.showinfo("Scan Summary", f"Open ports: {open_count}\nTotal scanned: {total_count}"))
 
     threading.Thread(target=scan_task).start()
 def clear_output():
@@ -198,6 +198,26 @@ def search_results():
 root = tk.Tk()
 root.title("Python Port Scanner")
 root.configure(bg="#1e1e2f")
+root.resizable(True, True)
+theme_var = tk.BooleanVar(value=True)  # True = Dark mode
+
+def toggle_theme():
+    if theme_var.get():  # Dark mode
+        root.configure(bg="#1e1e2f")
+        top_frame.configure(bg="#1e1e2f")
+        middle_frame.configure(bg="#1e1e2f")
+        bottom_frame.configure(bg="#1e1e2f")
+        output_box.configure(bg="#0d0d0d", fg="white")
+        target_entry.configure(bg="#2d2d3a", fg="white", insertbackground="white")
+        ports_entry.configure(bg="#2d2d3a", fg="white", insertbackground="white")
+    else:  # Light mode
+        root.configure(bg="white")
+        top_frame.configure(bg="white")
+        middle_frame.configure(bg="white")
+        bottom_frame.configure(bg="white")
+        output_box.configure(bg="white", fg="black")
+        target_entry.configure(bg="white", fg="black", insertbackground="black")
+        ports_entry.configure(bg="white", fg="black", insertbackground="black")
 
 top_frame = tk.Frame(root, bg="#1e1e2f")
 top_frame.grid(row=0, column=0, sticky="ew", padx=10, pady=10)
