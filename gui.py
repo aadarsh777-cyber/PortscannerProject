@@ -110,6 +110,13 @@ def save_results_txt():
             for r in results:
                 f.write(f"{r['host']} {r['port']} {r['protocol']} {r['status']}\n")
 
+def copy_results():
+    if not results:
+        return
+    text = "\n".join([f"{r['host']} {r['port']} {r['protocol']} {r['status']}" for r in results])
+    root.clipboard_clear()
+    root.clipboard_append(text)
+
 def random_ports():
     ports_entry.delete(0, tk.END)
     ports = random.sample(range(1, 1025), 10)
@@ -155,6 +162,7 @@ tk.Button(middle_frame, text="Clear Output", command=clear_output, bg="#ff4500",
 tk.Button(middle_frame, text="Save JSON", command=save_results_json, bg="#1e90ff", fg="white").grid(row=0, column=2, padx=5)
 tk.Button(middle_frame, text="Save CSV", command=save_results_csv, bg="#9370db", fg="white").grid(row=1, column=1, pady=5)
 tk.Button(middle_frame, text="Save TXT", command=save_results_txt, bg="#008b8b", fg="white").grid(row=0, column=4, padx=5)
+tk.Button(middle_frame, text="Copy Results", command=copy_results, bg="#4682b4", fg="white").grid(row=0, column=5, padx=5)
 tk.Button(middle_frame, text="Random Ports", command=random_ports, bg="#ffa500", fg="black").grid(row=0, column=6, padx=5)
 
 output_box = scrolledtext.ScrolledText(bottom_frame, width=100, height=20, bg="#0d0d0d", fg="white", font=("Consolas", 10))
